@@ -9,7 +9,9 @@ using namespace std;
 FIFORequestChannel::FIFORequestChannel (const string _name, const Side _side) : my_name( _name), my_side(_side) {
 	pipe1 = "fifo_" + my_name + "1";
 	pipe2 = "fifo_" + my_name + "2";
-		
+	Side temp = my_side;
+	my_side = temp; // added to get rid of compile time error - error: private field 'my_side' is not used [-Werror,-Wunused-private-field
+
 	if (_side == SERVER_SIDE) {
 		wfd = open_pipe(pipe1, O_WRONLY);
 		rfd = open_pipe(pipe2, O_RDONLY);
