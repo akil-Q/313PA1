@@ -54,12 +54,16 @@ int main (int argc, char *argv[]) {
     if (server == 0) {
 	// Running server in child
 		buff_size = to_string(m);
-		char* args[] = {(char*)("./server"), (char*)("-m"),(char*) buff_size.c_str(), NULL};
+		char* args[] = {const_cast<char*>("./server"), const_cast<char*>("-m"),const_cast<char*>(buff_size.c_str()), NULL};
 		execvp(args[0], args);
+		perror("execvp failed"); // print error if execvp fails
 		exit(0);
     }
+	if (server < 0) {
+    perror("fork failed");
+    exit(1);
+	}
      
-
     FIFORequestChannel control_chan("control", FIFORequestChannel::CLIENT_SIDE);
     chans.push_back(&control_chan);
 
@@ -139,9 +143,10 @@ int main (int argc, char *argv[]) {
     }
 
     MESSAGE_TYPE q = QUIT_MSG;
-    chan.cwrite(&q, sizeof(MESSAGE_TYPE));
-
-    wait(NULL);
-
+	for (int i = 0; i < chans.size(); ++i) {
+		    chan.cwrite(&q, sizeof(MESSAGE_TYPE));
+			if (chans[i] == &control_chan) continue;
+			delete chans[i]; 
+	}
     return 0;
 }
