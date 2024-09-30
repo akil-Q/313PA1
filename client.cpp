@@ -1,7 +1,3 @@
-/*
-    Updated client.cpp with fixes for failing tests
-*/
-
 #include "common.h"
 #include "FIFORequestChannel.h"
 
