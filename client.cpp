@@ -1,3 +1,16 @@
+/*
+	Author of the starter code
+    Yifan Ren
+    Department of Computer Science & Engineering
+    Texas A&M University
+    Date: 9/15/2024
+	
+	Please include your Name, UIN, and the date below
+	Name: Akil Daresalamwala
+	UIN: 632006030	
+	Date: 09/24/2024
+*/ //go to course notes and find instructions on PA 
+
 #include "common.h"
 #include "FIFORequestChannel.h"
 
@@ -9,9 +22,8 @@ int main (int argc, char *argv[]) {
     double t = -1;
     int e = -1;
     int m = MAX_MESSAGE;
-    char* buff_size;
+    string buff_size;
     bool new_channel = false;
-    bool buff_flag = false;
     vector<FIFORequestChannel*> chans;
     string filename = "";
 
@@ -31,8 +43,6 @@ int main (int argc, char *argv[]) {
                 break;
             case 'm':
                 m = atoi(optarg);
-                buff_flag = true;
-                buff_size = optarg;
                 break;
             case 'c':
                 new_channel = true;
@@ -42,13 +52,13 @@ int main (int argc, char *argv[]) {
 
     pid_t server = fork();
     if (server == 0) {
-        // Running server in child
-        if (buff_flag) {
-            char* args[] = {(char*)"./server", (char*)"-m", buff_size, NULL};
-            execvp(args[0], args);
-			        exit(0);
-        } 
-    } 
+	// Running server in child
+		buff_size = to_string(m);
+		char* args[] = {(char*)("./server"), (char*)("-m"),(char*) buff_size.c_str(), NULL};
+		execvp(args[0], args);
+		exit(0);
+    }
+     
 
     FIFORequestChannel control_chan("control", FIFORequestChannel::CLIENT_SIDE);
     chans.push_back(&control_chan);
@@ -56,7 +66,7 @@ int main (int argc, char *argv[]) {
     if (new_channel) {
         MESSAGE_TYPE newc = NEWCHANNEL_MSG;
         control_chan.cwrite(&newc, sizeof(MESSAGE_TYPE));
-        char cbuf[30];
+        char cbuf[40];
         control_chan.cread(cbuf, sizeof(cbuf));
         FIFORequestChannel* nchan = new FIFORequestChannel(cbuf, FIFORequestChannel::CLIENT_SIDE);
         chans.push_back(nchan);
