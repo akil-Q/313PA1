@@ -46,15 +46,9 @@ int main (int argc, char *argv[]) {
         if (buff_flag) {
             char* args[] = {(char*)"./server", (char*)"-m", buff_size, NULL};
             execvp(args[0], args);
-        } else {
-            char* args[] = {(char*)"./server", NULL};
-            execvp(args[0], args);
-        }
-        exit(0);
-    } else if (server < 0) {
-        cerr << "Error: Failed to fork. Errno: " << errno << " (" << strerror(errno) << ")" << endl;
-        exit(1);
-    }
+			        exit(0);
+        } 
+    } 
 
     FIFORequestChannel control_chan("control", FIFORequestChannel::CLIENT_SIDE);
     chans.push_back(&control_chan);
